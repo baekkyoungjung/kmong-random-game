@@ -74,7 +74,6 @@
 import _ from 'lodash';
 import { kmongMembers, kmongTeams, previousResults } from '../importData';
 import kmongUtils from '../kmongUtils';
-console.log('kmongMembers', kmongMembers);
 
 export default {
 	name: 'HelloWorld',
@@ -116,7 +115,7 @@ export default {
 			if (this.options.considerPreviousResults && previousResults[this.selectedType].length === 0) {
 				alert('비교할 데이터가 없읍니다.');
 			}
-			this.resultArr = setGroupCountArr();
+			this.resultArr = this.setGroupCountArr();
 		},
 		setGroupCountArr() {
 			let i = this.options.groupCounts;
