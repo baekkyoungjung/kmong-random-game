@@ -75,6 +75,7 @@ import _ from 'lodash';
 import { kmongMembers, kmongTeams, previousResults } from '../importData';
 import kmongUtils from '../kmongUtils';
 
+// 
 export default {
 	name: 'HelloWorld',
 	data () {
@@ -87,7 +88,6 @@ export default {
 			options: {
 				exeptionMembers: [],
 				maximumMembers: kmongUtils.kmongMembersLength(),
-				// groupLimit: 0,
 				groupCounts: 1,
 				mustInclude: [],
 				considerTeam: false,
@@ -111,11 +111,16 @@ export default {
 			this.$refs[type].value = '';
 		},
 		gogogo() {
-			console.log('previousResults[this.selectedType]', previousResults[this.selectedType]);
 			if (this.options.considerPreviousResults && previousResults[this.selectedType].length === 0) {
 				alert('비교할 데이터가 없읍니다.');
 			}
 			this.resultArr = this.setGroupCountArr();
+			// 한그룹씩 쌓아나가기
+			// 1. 이전데이터 참고
+			// 2. 성별
+			// 3. 팀별
+			// flow - 랜덤으로 뽑힌 한 사람을 이전데이터에서 돌린뒤, 항아리에 이미 있는 사람을 고려해서 (혹은 더 이전 데이터 참고) 진행할지 말지 결정
+			// - 진행된다면 성별로 
 		},
 		setGroupCountArr() {
 			let i = this.options.groupCounts;
@@ -127,10 +132,16 @@ export default {
 		},
 		getOneHumanShuffle() {
 			const selectOne = _.sample(this.remainMembers);
+			// this.options.exeptionMembers
+			// ran, bk
 			// 다시 remainMembers에 넣는 작업
-			this.remainMembers = _.remove(this.remainMembers, function(human) {
-				return human !== selectOne;
-			});
+			this.remainMembers = _.remove(this.remainMembers, human => human !== selectOne );
+
+			if (this.considerGender) {
+				// 여성 기준 56%
+				// 첫번째가 남자일경우에는 여자가 나올확률이 56%가 되도록 뽑는다.
+			}
+			
 			return selectOne;
 		}
 	}
