@@ -14,16 +14,21 @@ class kmongUtils {
 		return instance;
 	}
 	kmongMembersLength() {
-		return Object.keys(kmongMembers).length;
+		return kmongMembers.length;
 	}
-	getRatio() {
-		let genderRatio = 0;
-		Object.keys(kmongMembers).map(memberKey => {
-			if (kmongMembers[memberKey].gender === 'f') {
-				genderRatio += 1;
+	getRatio(gender = 'f', isRatio = false) {
+		// let genderRatio = 0;
+		let lists = [];
+		kmongMembers.map(member => {
+			if (member.gender === gender) {
+				lists.push(member);
+				// genderRatio += 1;
 			}
 		});
-
+		if (isRatio !== 'ratio') {
+			return lists;
+		}
+		let genderRatio = lists.length;
 		genderRatio /= this.kmongMembersLength();
 		genderRatio *= 100;
 		genderRatio = parseInt(genderRatio);

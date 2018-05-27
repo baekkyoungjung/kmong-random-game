@@ -1,210 +1,261 @@
-const kmongMembers = {
+const kmongMembers = [
 	// gender: 'm' || 'f'
-	Tony: {
+	{
+		nickname: 'Tony',
 		gender: 'm',
 		team: 'c',
 	},
-	Leo: {
+	{
+		nickname: 'Leo',
 		gender: 'm',
 		team: 'c',
 	},
-	Craig: {
+	{
+		nickname: 'Craig',
 		gender: 'm',
 		team: 'c',
 	},
-	Ssol: {
+	{
+		nickname: 'Ssol',
 		gender: 'f',
 		team: 'management',
 	},
-	Stephanie: {
+	{
+		nickname: 'Stephanie',
 		gender: 'f',
 		team: 'management',
 	},
-	Sean: {
+	{
+		nickname: 'Sean',
 		gender: 'm',
 		team: 'dev',
 	},
-	David: {
+	{
+		nickname: 'David',
 		gender: 'm',
 		team: 'dev',
 	},
-	Jay: {
+	{
+		nickname: 'Jay',
 		gender: 'f',
 		team: 'dev',
 	},
-	Jacob: {
+	{
+		nickname: 'Jacob',
 		gender: 'm',
 		team: 'dev',
 	},
-	bk: {
+	{
+		nickname: 'bk',
 		gender: 'm',
 		team: 'dev',
 	},
-	Jinny: {
+	{
+		nickname: 'Jinny',
 		gender: 'f',
 		team: 'dev',
 	},
-	Jenna: {
+	{
+		nickname: 'Jenna',
 		gender: 'f',
 		team: 'dev',
 	},
-	Kyle: {
+	{
+		nickname: 'Kyle',
 		gender: 'm',
 		team: 'dev',
 	},
-	Amy: {
+	{
+		nickname: 'Amy',
 		gender: 'f',
 		team: 'dev',
 	},
-	Becky: {
+	{
+		nickname: 'Becky',
 		gender: 'f',
 		team: 'dev',
 	},
-	Ran: {
+	{
+		nickname: 'Ran',
 		gender: 'f',
 		team: 'dev',
 	},
-	Eva: {
+	{
+		nickname: 'Eva',
 		gender: 'f',
 		team: 'dev',
 	},
-	Edgar: {
+	{
+		nickname: 'Edgar',
 		gender: 'm',
 		team: 'dev',
 	},
-	Int: {
+	{
+		nickname: 'Int',
 		gender: 'f',
 		team: 'dev',
 	},
-	km: {
+	{
+		nickname: 'km',
 		gender: 'f',
 		team: 'dev',
 	},
-	Daniel: {
+	{
+		nickname: 'Daniel',
 		gender: 'm',
 		team: 'dev',
 	},
-	Sead: {
+	{
+		nickname: 'Sead',
 		gender: 'm',
 		team: 'dev',
 	},
-	Jud: {
+	{
+		nickname: 'Jud',
 		gender: 'f',
 		team: 'dev',
 	},
-	Alex: {
+	{
+		nickname: 'Alex',
 		gender: 'm',
 		team: 'dev',
 	},
-	Zerg: {
+	{
+		nickname: 'Zerg',
 		gender: 'f',
 		team: 'dev',
 	},
-	Hardy: {
+	{
+		nickname: 'Hardy',
 		gender: 'm',
 		team: 'dev',
 	},
-	Nadia: {
+	{
+		nickname: 'Nadia',
 		gender: 'f',
 		team: 'dev',
 	},
-	Harry: {
+	{
+		nickname: 'Harry',
 		gender: 'm',
 		team: 'dev',
 	},
-	Aiden: {
+	{
+		nickname: 'Aiden',
 		gender: 'm',
 		team: 'dev',
 	},
-	Teo: {
-		gender: 'm',
-		team: 'operation',
-	},
-	Lily: {
-		gender: 'f',
-		team: 'operation',
-	},
-	jim: {
-		gender: 'm',
-		team: 'operation',
-	},
-	Kelly: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Belle: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Ellin: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Ace: {
-		gender: 'm',
-		team: 'operation',
-	},
-	Mia: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Dani: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Sam: {
+	{
+		nickname: 'Teo',
 		gender: 'm',
 		team: 'operation',
 	},
-	Julie: {
+	{
+		nickname: 'Lily',
 		gender: 'f',
 		team: 'operation',
 	},
-	Anne: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Summer: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Keira: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Hanna: {
-		gender: 'f',
-		team: 'operation',
-	},
-	Glenn: {
+	{
+		nickname: 'jim',
 		gender: 'm',
 		team: 'operation',
 	},
-	Jane: {
+	{
+		nickname: 'Kelly',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Belle',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Ellin',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Ace',
+		gender: 'm',
+		team: 'operation',
+	},
+	{
+		nickname: 'Mia',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Dani',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Sam',
+		gender: 'm',
+		team: 'operation',
+	},
+	{
+		nickname: 'Julie',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Anne',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Summer',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Keira',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Hanna',
+		gender: 'f',
+		team: 'operation',
+	},
+	{
+		nickname: 'Glenn',
+		gender: 'm',
+		team: 'operation',
+	},
+	{
+		nickname: 'Jane',
 		gender: 'f',
 		team: 'marketing',
 	},
-	Luna: {
+	{
+		nickname: 'Luna',
 		gender: 'f',
 		team: 'marketing',
 	},
-	Min: {
+	{
+		nickname: 'Min',
 		gender: 'm',
 		team: 'marketing',
 	},
-	Sue: {
+	{
+		nickname: 'Sue',
 		gender: 'f',
 		team: 'marketing',
 	},
-	Jennie: {
+	{
+		nickname: 'Jennie',
 		gender: 'f',
 		team: 'marketing',
 	},
-	Paul: {
+	{
+		nickname: 'Paul',
 		gender: 'm',
 		team: 'marketing',
 	},
-};
+];
 
 const kmongTeams = [
 	'dev', 'operation', 'c', 'marketing', 'management', 

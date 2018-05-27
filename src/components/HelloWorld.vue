@@ -67,6 +67,27 @@
 				</div>
 			</div>
 		</div>
+		<div class="wrapper">
+			<div id="form-result">
+				<div class="row">
+					<div
+						class="col-xs-3 group-wrapper"
+						v-for="group in resultArr"
+					>
+						<div
+							v-for="human in group"
+							class="team col-xs-12"
+							
+						>
+							<div class="group-item">
+								<!-- <div :class="human.team">{{ human.team }}</div> -->
+								<div :class="human.gender">{{ human.nickname }}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -74,7 +95,6 @@
 import _ from 'lodash';
 import { kmongMembers, kmongTeams, previousResults } from '../importData';
 import kmongUtils from '../kmongUtils';
-
 // 
 export default {
 	name: 'HelloWorld',
@@ -82,21 +102,24 @@ export default {
 		return {
 			selectedType: '',
 			typeLists: ['friendly', 'cleaning', 'monthlyDining'],
-			remainMembers: Object.keys(kmongMembers),
+			remainMembers: kmongMembers,
 			resultArr: [],
-			genderRatio: kmongUtils.getRatio(),
+			genderRatio: kmongUtils.getRatio('f', 'ratio'),
 			options: {
 				exeptionMembers: [],
 				maximumMembers: kmongUtils.kmongMembersLength(),
+				groupLimit: 1,
 				groupCounts: 1,
 				mustInclude: [],
 				considerTeam: false,
 				considerGender: false,
 				considerPreviousResults: false,
-			}
+			},
+			nowGender: 'f',
 		}
 	},
-	mounted() {},
+	mounted() {
+	},
 	methods: {
 		addLists(type) {
 			if (typeof this.$refs[type] === 'undefined'
@@ -114,42 +137,75 @@ export default {
 			if (this.options.considerPreviousResults && previousResults[this.selectedType].length === 0) {
 				alert('비교할 데이터가 없읍니다.');
 			}
+			this.options.exeptionMembers.map(exeption => {
+				this.setLeftRemainMembers(exeption);
+			})
 			this.resultArr = this.setGroupCountArr();
-			// 한그룹씩 쌓아나가기
-			// 1. 이전데이터 참고
-			// 2. 성별
-			// 3. 팀별
-			// flow - 랜덤으로 뽑힌 한 사람을 이전데이터에서 돌린뒤, 항아리에 이미 있는 사람을 고려해서 (혹은 더 이전 데이터 참고) 진행할지 말지 결정
-			// - 진행된다면 성별로 
+
+			this.resultArr.map((group, i) => {
+				this.loopForPeople(group);
+				this.resultArr[i] = _.shuffle(group);
+			});
+
+		},
+		loopForPeople(group) {
+
+			let i = group.length;
+			for (i; i < this.options.groupLimit; i += 1) {
+				const sortGenderLists = kmongUtils.getRatio(this.nowGender);
+				// 성별을 일단 추출
+				// 성별중 한명을 추출 
+				const candidate = this.getOneHumanShuffle(sortGenderLists);
+				// 첫빠따면 아무 조건없이 한명 넣기 (일단은)
+				if (group.length === 0) {
+					group = this.nextPeople(group, candidate);
+				} else {
+					// 진짜 로직 시작
+					// 이전 데이타를 고려해서 너어볼까?
+					this.calculateLatestData(group);
+					group = this.nextPeople(group, candidate);
+				}
+			}
+		},
+		calculateLatestData(group) {
+		},
+		nextPeople(group, candidate) {
+			group.push(candidate);
+			this.setSelectGenderRatio();
+			return group;
+		},
+		setSelectGenderRatio() {
+			// const genderRatio = this.genderRatio / 100;
+			// const randomValue = Math.random();
+			// random이 여자 비율보다 낮으면 ? 
+			// this.nowGender = (randomValue < genderRatio) ? 'f' : 'm';
+			this.nowGender = this.nowGender === 'm' ? 'f' : 'm';
 		},
 		setGroupCountArr() {
 			let i = this.options.groupCounts;
+			this.options.groupLimit = Math.round(this.remainMembers.length / i);
 			const newResultArr = [];
 			for (i; i > 0; i -= 1) {
 				newResultArr.push([]);
 			}
 			return newResultArr;
 		},
-		getOneHumanShuffle() {
-			const selectOne = _.sample(this.remainMembers);
+		getOneHumanShuffle(candidateList) {
+			const selectOne = _.sample(candidateList);
 			// this.options.exeptionMembers
 			// ran, bk
 			// 다시 remainMembers에 넣는 작업
-			this.remainMembers = _.remove(this.remainMembers, human => human !== selectOne );
-
-			if (this.considerGender) {
-				// 여성 기준 56%
-				// 첫번째가 남자일경우에는 여자가 나올확률이 56%가 되도록 뽑는다.
-			}
-			
 			return selectOne;
+		},
+		setLeftRemainMembers(theOne) {
+			this.remainMembers = _.remove(this.remainMembers, human => human.nickname !== theOne );
 		}
 	}
 
 }
 </script>
 
-<style scoped>
+<style>
 h1, h2 {
 	font-weight: normal;
 }
@@ -163,5 +219,39 @@ li {
 }
 a {
 	color: #42b983;
+}
+#form-result {
+	margin: 0 auto;
+}
+.group-wrapper {
+	margin-bottom: 30px;
+}
+.group-item {
+	/*border: 1px solid black;*/
+}
+.team {
+	font-size: 18px;
+	font-weight: bold;
+}
+.team .f {
+	color: pink;
+}
+.team .m {
+	color: skyblue;
+}
+.dev {
+	color: green;
+}
+.operation {
+	color: pink;
+}
+.c {
+	color: black;
+}
+.marketing {
+	color: yellow;
+}
+.management {
+	color: brown;
 }
 </style>
