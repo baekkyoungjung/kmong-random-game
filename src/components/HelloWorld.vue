@@ -36,7 +36,7 @@
 						</div> -->
 						<div class="col-xs-4 col-sm-3">
 							<div>최대 그룹 갯수</div>
-							<input v-model.number="options.groupCounts" type="number" class="form-control">
+							<input v-model.number='options.groupCounts' type="number" class="form-control">
 						</div>
 						<div class="col-xs-4 col-sm-3">
 							<div class="form-group">
@@ -46,7 +46,13 @@
 									placeholder="예외자"
 									ref="exeptionMembers"
 								>
-								<button @click="addLists('exeptionMembers')" type="submit" class="btn btn-primary">Submit</button>
+								<button
+									@click='addLists("exeptionMembers")'
+									type="submit"
+									class="btn btn-primary"
+								>
+									Submit
+								</button>
 							</div>
 						</div>
 						<div class="col-xs-4 col-sm-3">
@@ -57,7 +63,13 @@
 									placeholder="필수자"
 									ref="mustInclude"
 								>
-								<button @click="addLists('mustInclude')" type="submit" class="btn btn-primary">Submit</button>
+								<button
+									@click='addLists("mustInclude")'
+									type="submit"
+									class="btn btn-primary"
+								>
+									<div>Submit</div>
+								</button>
 							</div>
 						</div>
 					</div>
