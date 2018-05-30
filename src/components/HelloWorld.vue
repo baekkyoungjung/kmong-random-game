@@ -175,11 +175,17 @@ export default {
 					// 진짜 로직 시작
 					// 이전 데이타를 고려해서 너어볼까?
 					this.calculateLatestData(group);
+					this.calculateTeam(group);
 					group = this.nextPeople(group, candidate);
 				}
 			}
 		},
 		calculateLatestData(group) {
+			// 현재 group에 누가있는지 파악하고, 이전데이타랑 비교해본다.
+		},
+		calculateTeam(group) {
+			// group에 team이 절절한 비율로 있는지 확인하고 넣는다.
+			// 아니면? 후보자들중에 다시 뽑아서 진행한다.
 		},
 		nextPeople(group, candidate) {
 			group.push(candidate);
