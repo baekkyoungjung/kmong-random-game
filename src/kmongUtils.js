@@ -16,11 +16,30 @@ class kmongUtils {
 	kmongMembersLength() {
 		return kmongMembers.length;
 	}
-	getRatio(gender = 'f', isRatio = false) {
+	getRatio(type = 'f', isRatio = false, memberLists = kmongMembers) {
 		// let genderRatio = 0;
+		let getType = 'gender';
+		switch (type) {
+			case 'f':
+			case 'm': {
+				getType = 'gender';
+				break;
+			}
+			case 'dev':
+			case 'management':
+			case 'operation':
+			case 'marketing':
+			case 'c': {
+				getType = 'team';
+				break;
+			}
+			default: {
+				break;
+			}
+		};
 		let lists = [];
-		kmongMembers.map(member => {
-			if (member.gender === gender) {
+		memberLists.map(member => {
+			if (member[getType] === type) {
 				lists.push(member);
 				// genderRatio += 1;
 			}
@@ -29,9 +48,9 @@ class kmongUtils {
 			return lists;
 		}
 		let genderRatio = lists.length;
-		genderRatio /= this.kmongMembersLength();
-		genderRatio *= 100;
-		genderRatio = parseInt(genderRatio);
+		genderRatio /= memberLists.length;
+		genderRatio *= 1000;
+		genderRatio = Math.round(Math.round(genderRatio) / 10) / 100;
 
 		return genderRatio;
 	}

@@ -84,18 +84,33 @@
 				<div class="row">
 					<div
 						class="col-xs-3 group-wrapper"
-						v-for="group in resultArr"
+						v-for="(group, i) in resultArr"
 					>
-						<div
-							v-for="human in group"
-							class="team col-xs-12"
-							
-						>
-							<div class="group-item">
-								<!-- <div :class="human.team">{{ human.team }}</div> -->
-								<div :class="human.gender">{{ human.nickname }}</div>
-							</div>
-						</div>
+					<!-- <Draggable v-model="resultArr">
+					    <transition-group> -->
+					        <!-- <div
+					        	class="col-xs-3 group-wrapper"
+					        	v-for="(group, i) in resultArr" :key="i"
+					        > -->
+					        	<draggable v-model="resultArr[i]">
+					        	    <transition-group>
+					        	        <div
+					        	        	class="team col-xs-12"
+					        	        	v-for="(human, ii) in group" :key="ii"
+					        	        >
+											<div class="group-item">
+												<!-- <div :class="human.team">{{ human.team }}</div> -->
+												<div :class="human.gender">{{ human.nickname }}</div>
+											</div>
+					        	            
+					        	        </div>
+					        	    </transition-group>
+					        	</draggable>
+					        	<!-- <div>비율 {{ resultArrRatio[i] * 100 }} / {{ (1 - resultArrRatio[i]) * 100 }}</div> -->
+					        	<div>비율 {{ displayRatio(i) }}</div>
+					        <!-- </div> -->
+					    <!-- </transition-group>
+					</Draggable> -->
 					</div>
 				</div>
 			</div>
@@ -107,16 +122,24 @@
 import _ from 'lodash';
 import { kmongMembers, kmongTeams, previousResults } from '../importData';
 import kmongUtils from '../kmongUtils';
-// 
+import Draggable from 'vuedraggable'
+//
+const kmongUtilss = kmongUtils;
 export default {
 	name: 'HelloWorld',
+	components: {
+		Draggable,
+	},
 	data () {
 		return {
 			selectedType: '',
 			typeLists: ['friendly', 'cleaning', 'monthlyDining'],
-			remainMembers: kmongMembers,
+			remainMembers: [],
 			resultArr: [],
-			genderRatio: kmongUtils.getRatio('f', 'ratio'),
+			resultArrRatio: [],
+			resultArrGenderSample: [],
+			genderRatio: 0,
+			genderDecimal: 0,
 			options: {
 				exeptionMembers: [],
 				maximumMembers: kmongUtils.kmongMembersLength(),
@@ -133,6 +156,9 @@ export default {
 	mounted() {
 	},
 	methods: {
+		displayRatio(i) {
+			return `${Math.round(this.resultArrRatio[i].ratio * 100)} / ${Math.round((1 - this.resultArrRatio[i].ratio) * 100)}`;
+		},
 		addLists(type) {
 			if (typeof this.$refs[type] === 'undefined'
 				|| this.$refs[type].value === ''
@@ -149,25 +175,57 @@ export default {
 			if (this.options.considerPreviousResults && previousResults[this.selectedType].length === 0) {
 				alert('비교할 데이터가 없읍니다.');
 			}
+			this.remainMembers = JSON.parse(JSON.stringify(kmongMembers));
+
+			this.resultArr = [];
 			this.options.exeptionMembers.map(exeption => {
 				this.setLeftRemainMembers(exeption);
 			})
+			this.genderRatio = kmongUtils.getRatio('f', 'ratio', this.remainMembers);
+			this.genderDecimal = 0.1;
 			this.resultArr = this.setGroupCountArr();
-
 			this.resultArr.map((group, i) => {
-				this.loopForPeople(group);
-				this.resultArr[i] = _.shuffle(group);
+				this.loopForPeople(group, i);
+				// this.resultArr[i] = _.shuffle(group);
 			});
+			this.calculateGenderRatio();
+			
+			let sortByImBalance = JSON.parse(JSON.stringify(this.resultArrRatio));
+			sortByImBalance.sort((a, b) => b.ratio - a.ratio);
+			// 나머지 사람
+			if (this.remainMembers.length > 0) {
+				let ii = 0;
+				let lastIndex = 0;
+				this.remainMembers.map(human => {
+					if (this.resultArr.length - 1 < ii) {
+						ii = 0;
+					}
+					let correctSort = (human.gender === 'm') ? ii : (this.resultArrRatio.length - 1) - lastIndex;
+					correctSort = correctSort < 0 ? 0 : correctSort;
+					let correctIndex = sortByImBalance[correctSort].index;
+					this.resultArr[correctIndex].push(human);
+					ii += 1;
+					if (human.gender === 'f') {
+						lastIndex += 1;
+					}
+				});
+			}
+			// gender ratio 재계산
+			this.calculateGenderRatio();
+			this.remainMembers = [];
+
 
 		},
-		loopForPeople(group) {
-
+		loopForPeople(group, index) {
 			let i = group.length;
 			for (i; i < this.options.groupLimit; i += 1) {
-				const sortGenderLists = kmongUtils.getRatio(this.nowGender);
+				const sortGenderLists = kmongUtils.getRatio(this.nowGender, false, this.remainMembers);
 				// 성별을 일단 추출
 				// 성별중 한명을 추출 
 				const candidate = this.getOneHumanShuffle(sortGenderLists);
+				if (candidate === false) {
+					return false;
+				}
 				// 첫빠따면 아무 조건없이 한명 넣기 (일단은)
 				if (group.length === 0) {
 					group = this.nextPeople(group, candidate);
@@ -179,6 +237,7 @@ export default {
 					group = this.nextPeople(group, candidate);
 				}
 			}
+
 		},
 		calculateLatestData(group) {
 			// 현재 group에 누가있는지 파악하고, 이전데이타랑 비교해본다.
@@ -189,34 +248,79 @@ export default {
 		},
 		nextPeople(group, candidate) {
 			group.push(candidate);
+			this.setLeftRemainMembers(candidate.nickname);
 			this.setSelectGenderRatio();
 			return group;
 		},
-		setSelectGenderRatio() {
-			// const genderRatio = this.genderRatio / 100;
-			// const randomValue = Math.random();
-			// random이 여자 비율보다 낮으면 ? 
-			// this.nowGender = (randomValue < genderRatio) ? 'f' : 'm';
-			this.nowGender = this.nowGender === 'm' ? 'f' : 'm';
-		},
+		
 		setGroupCountArr() {
 			let i = this.options.groupCounts;
-			this.options.groupLimit = Math.round(this.remainMembers.length / i);
 			const newResultArr = [];
+			this.options.groupLimit = Math.floor(this.remainMembers.length / i);
 			for (i; i > 0; i -= 1) {
+				// 한그룹당 몇명, 남자, 여자 들어갈 수를 미리 정한다.
 				newResultArr.push([]);
 			}
 			return newResultArr;
 		},
 		getOneHumanShuffle(candidateList) {
-			const selectOne = _.sample(candidateList);
+			if (typeof candidateList === 'undefined' || candidateList.length === 0) {
+				return false;
+			}
+			let selectOne = _.sample(candidateList);
+			const isSetSelectOne = typeof selectOne === 'undefined';
+			if (isSetSelectOne) {
+				// if () {
+
+				// }
+				this.setSelectGenderRatio();
+				return this.getOneHumanShuffle(kmongUtils.getRatio(this.nowGender, false, this.remainMembers));
+			} else if (typeof selectOne.nickname === 'undefined') {
+				this.setSelectGenderRatio();
+				return this.getOneHumanShuffle(kmongUtils.getRatio(this.nowGender, false, this.remainMembers));
+			}
 			// this.options.exeptionMembers
-			// ran, bk
 			// 다시 remainMembers에 넣는 작업
 			return selectOne;
 		},
 		setLeftRemainMembers(theOne) {
-			this.remainMembers = _.remove(this.remainMembers, human => human.nickname !== theOne );
+			this.remainMembers = _.remove(this.remainMembers, human => human.nickname !== theOne);
+		},
+		setSelectGenderRatio() {
+			if (this.options.considerGender === true) {
+				this.calculateConsiderGender();
+			} else {
+				this.nowGender = (this.nowGender === 'm') ? 'f' : 'm';
+			}
+		},
+		calculateConsiderGender() {
+			let nextExpectGender = this.nowGender === 'm' ? 'f' : 'm';
+			const fewGender = this.genderRatio > 0.5 ? 'm' : 'f';
+			// 소수의 성별일때 
+			if (nextExpectGender === fewGender) {
+				const genderRatio = this.genderRatio;
+				const groupLimit = this.options.groupLimit;
+				const groupGenderRatio = genderRatio * groupLimit;
+				const groupGenderRatioDecimal = parseInt(Math.round((groupGenderRatio - Math.floor(groupGenderRatio)) * 10)) / 10;
+				// const randomValue = Math.random();
+				// random이 여자 비율보다 낮으면 ? 
+				if ((this.genderDecimal + 0.1) > groupGenderRatioDecimal) {
+					this.genderDecimal = 0;
+					nextExpectGender = (fewGender === 'm') ? 'f' : 'm';
+				}
+
+			} else {
+				this.genderDecimal += 0.1;
+			}
+			this.nowGender = nextExpectGender;
+		},
+		calculateGenderRatio() {
+			this.resultArr.map((group, i) => {
+				this.resultArrRatio[i] = {
+					index: i,
+					ratio: kmongUtils.getRatio('f', 'ratio', this.resultArr[i]),
+				};
+			});
 		}
 	}
 
