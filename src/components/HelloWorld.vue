@@ -26,10 +26,10 @@
 							<input id="consider-previous-results" class="form-control" type="checkbox" v-model="options.considerPreviousResults">
 							<label for="consider-previous-results">이전결과 고려</label>
 						</div>
-						<div class="col-xs-4 col-sm-3">
+						<!-- <div class="col-xs-4 col-sm-3">
 							<div>최대 인원</div>
 							<input v-model.number="options.maximumMembers" type="number" class="form-control">
-						</div>
+						</div> -->
 						<!-- <div class="col-xs-4 col-sm-3">
 							<div>그룹당 최대 인원</div>
 							<input v-model.number="options.groupLimit" type="number" class="form-control">
@@ -92,6 +92,7 @@
 					        	class="col-xs-3 group-wrapper"
 					        	v-for="(group, i) in resultArr" :key="i"
 					        > -->
+					        	<h2><b>{{ i + 1 }}조</b></h2>
 					        	<draggable v-model="resultArr[i]">
 					        	    <transition-group>
 					        	        <div
@@ -142,7 +143,7 @@ export default {
 			genderDecimal: 0,
 			options: {
 				exeptionMembers: [],
-				maximumMembers: kmongUtils.kmongMembersLength(),
+				// maximumMembers: kmongUtils.kmongMembersLength(),
 				groupLimit: 1,
 				groupCounts: 1,
 				mustInclude: [],
@@ -168,7 +169,19 @@ export default {
 				this.$refs[type].value = '';
 				return false;
 			}
-			this.options[type].push(this.$refs[type].value);
+			console.log('this.$refs[type].value', this.$refs[type].value);
+			if (this.$refs[type].value.indexOf(',') > -1) {
+				console.log("this.$refs[type].value.indexOf('@')", this.$refs[type].value.indexOf('@'), this.$refs[type].value.split('@'));
+				this.$refs[type].value.split(',').map(nickname => {
+					if (nickname !== '') {
+						this.options[type].push(nickname.replace('@', '').toLowerCase().trim());
+					}
+				});
+			} else {
+				this.options[type].push(this.$refs[type].value.toLowerCase());
+			}
+			
+
 			this.$refs[type].value = '';
 		},
 		gogogo() {
@@ -284,7 +297,7 @@ export default {
 			return selectOne;
 		},
 		setLeftRemainMembers(theOne) {
-			this.remainMembers = _.remove(this.remainMembers, human => human.nickname !== theOne);
+			this.remainMembers = _.remove(this.remainMembers, human => human.nickname.toLowerCase() !== theOne.toLowerCase());
 		},
 		setSelectGenderRatio() {
 			if (this.options.considerGender === true) {

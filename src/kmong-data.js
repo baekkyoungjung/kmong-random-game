@@ -1,4 +1,4 @@
-const kmongMembers = [
+return [
 	// gender: 'm' || 'f'
 	{
 		nickname: 'Tony',
@@ -301,25 +301,3 @@ const kmongMembers = [
 		team: 'marketing',
 	},
 ];
-
-const kmongTeams = [
-	'dev', 'operation', 'c', 'marketing', 'management', 
-];
-
-const previousResults = {
-	friendly: [
-		// [], [], [],
-	],
-	cleaning: [
-		// [], [], [],
-	],
-	monthlyDining: [
-		// [], [], [],
-	],
-};
-
-export {
-	kmongMembers,
-	kmongTeams,
-	previousResults
-};
