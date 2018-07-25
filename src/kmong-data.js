@@ -1,4 +1,4 @@
-return [
+[
 	// gender: 'm' || 'f'
 	{
 		nickname: 'Tony',
